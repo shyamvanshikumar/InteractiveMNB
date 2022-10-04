@@ -33,7 +33,7 @@ class MNBmodel:
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(vecData, label, test_size=0.2, shuffle=True)
 
     def train(self):
-        Fnc = np.zeros((8,100))
+        Fnc = np.zeros((8,len(self.vocabulary)))
         Prc = np.zeros((8,1))
         for i in range(8):
             indices = (self.y_train == i).astype(int)
@@ -72,3 +72,24 @@ class MNBmodel:
         dist = list(res.values())
         return {"Label":pred, "Probability":prob, "Words":words, "Distribution":dist}
 
+    def add_word_vocabulary(self, word):
+        index = len(self.vocabulary)
+        if (self.vocabulary.get(word) == None):
+            self.vocabulary[word] = index
+        self.word_weight = np.append(self.word_weight, 1)
+        print(self.vocabulary)
+    
+    def rem_word_vocabulary(self, word):
+        if (self.vocabulary.get(word) != None):
+            index = self.vocabulary.pop(word)
+            self.word_weight = np.delete(self.word_weight, index)
+            for j in range(index+1,len(self.vocabulary)+1):
+                for key, value in self.vocabulary.items():
+                    if value == j:
+                        self.vocabulary[key] = j-1
+        print(self.vocabulary)
+
+    def adj_weight(self, word, weight):
+        if (self.vocabulary.get(word) != None):
+            index = self.vocabulary[word]
+            self.word_weight[index] = weight

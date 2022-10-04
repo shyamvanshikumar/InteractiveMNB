@@ -19,3 +19,28 @@ def predictor(request):
         return render(request, 'main.html', prediction)
     
     return render(request, 'main.html', {'accuracy': model.acc})
+
+def add_word(request):
+    word = request.POST['word']
+    model.add_word_vocabulary(word)
+    model.getTrainTestData()
+    model.train()
+    model.test()
+    return render(request, 'main.html', {'accuracy': model.acc})
+
+def rem_word(request):
+    word = request.POST['word']
+    model.rem_word_vocabulary(word)
+    model.getTrainTestData()
+    model.train()
+    model.test()
+    return render(request, 'main.html', {'accuracy': model.acc})
+
+def adj_weight(request):
+    word = request.POST['word']
+    weight = request.POST['weight']
+    model.adj_weight(word, weight)
+    model.getTrainTestData()
+    model.train()
+    model.test()
+    return render(request, 'main.html', {'accuracy': model.acc})

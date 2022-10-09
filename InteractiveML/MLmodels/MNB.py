@@ -11,6 +11,7 @@ classLabels = ["Company", "Education Institution", "Artist", "Ahtlete", "Office 
                 "Mean of Transportation", "Building", "Natural Place"]
 
 class MNBmodel:
+    prevDoc = ""
     def __init__(self):
         corpus = pd.read_csv("./data/dbpedia_8K.csv")
         corpus.drop(columns=["title"], inplace=True)
@@ -40,6 +41,7 @@ class MNBmodel:
             Fnc[i] = indices @ self.X_train
             Prc[i] = np.sum(indices)/len(self.y_train)
         
+        print(Fnc.shape, self.word_weight.shape)
         Prwc = (Fnc + self.word_weight) / (np.sum(Fnc, axis=1) + np.sum(self.word_weight)).reshape((8,1))
         self.logPrwc = np.log(Prwc)
         self.logPrc = np.log(Prc)
@@ -51,10 +53,15 @@ class MNBmodel:
             logPrcdi = np.sum((doc * self.logPrwc), axis=1).reshape((8,1)) + self.logPrc
             y_pred[i] = np.argmax(logPrcdi)
 
-        self.acc = accuracy_score(self.y_test, y_pred)
+        self.acc = round(accuracy_score(self.y_test, y_pred), 2)
         print(self.acc)
     
-    def predict(self, txtDoc):
+    def predict(self, txtDoc=None):
+        if txtDoc==None:
+            txtDoc = self.prevDoc
+        else:
+            self.prevDoc = txtDoc
+
         txtDoc = [txtDoc]
         changeVec = CountVectorizer(stop_words='english', vocabulary=self.vocabulary)
         doc = changeVec.fit_transform(txtDoc).toarray()
@@ -64,9 +71,16 @@ class MNBmodel:
         pred = classLabels[predIndex]
         Prcdi = np.exp(logPrcdi)
         prob = Prcdi[predIndex] / np.sum(Prcdi) * 100
+        prob = round(float(prob),4)
+
         Prwc = np.exp(self.logPrwc[predIndex])
-        words_with_prob= dict(zip(self.vocabulary, Prwc))
-        res = dict(sorted(words_with_prob.items(), key = itemgetter(1), reverse = True)[:10])
+        words_with_prob = dict()#dict(zip(self.vocabulary, Prwc))
+        for word, index in self.vocabulary.items():
+            if doc[0][index] > 0:
+                words_with_prob[word] = Prwc[index]
+        
+        num_of_words = max(len(words_with_prob), 10)
+        res = dict(sorted(words_with_prob.items(), key = itemgetter(1), reverse = True)[:num_of_words])
         print(res)
         words = list(res.keys())
         dist = list(res.values())
@@ -76,7 +90,7 @@ class MNBmodel:
         index = len(self.vocabulary)
         if (self.vocabulary.get(word) == None):
             self.vocabulary[word] = index
-        self.word_weight = np.append(self.word_weight, 1)
+            self.word_weight = np.append(self.word_weight, 1)
         print(self.vocabulary)
     
     def rem_word_vocabulary(self, word):

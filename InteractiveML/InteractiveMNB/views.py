@@ -26,7 +26,9 @@ def add_word(request):
     model.getTrainTestData()
     model.train()
     model.test()
-    return render(request, 'main.html', {'accuracy': model.acc})
+    prediction = model.predict()
+    prediction['accuracy'] = model.acc
+    return render(request, 'main.html', prediction)
 
 def rem_word(request):
     word = request.POST['word']
@@ -34,7 +36,9 @@ def rem_word(request):
     model.getTrainTestData()
     model.train()
     model.test()
-    return render(request, 'main.html', {'accuracy': model.acc})
+    prediction = model.predict()
+    prediction['accuracy'] = model.acc
+    return render(request, 'main.html', prediction)
 
 def adj_weight(request):
     word = request.POST['word']
@@ -43,4 +47,6 @@ def adj_weight(request):
     model.getTrainTestData()
     model.train()
     model.test()
-    return render(request, 'main.html', {'accuracy': model.acc})
+    prediction = model.predict()
+    prediction['accuracy'] = model.acc
+    return render(request, 'main.html', prediction)

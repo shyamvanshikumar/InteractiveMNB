@@ -8,6 +8,7 @@ model = MNB.MNBmodel()
 def predictor(request):
     if request.method == 'GET':
         model.getTrainTestData()
+        k_fold_accuracy = model.trainAndValidate()
         model.train()
         model.test()
         
@@ -18,7 +19,7 @@ def predictor(request):
         prediction['accuracy'] = model.acc
         return render(request, 'main.html', prediction)
     
-    return render(request, 'main.html', {'accuracy': model.acc})
+    return render(request, 'main.html', {'accuracy': k_fold_accuracy})
 
 def add_word(request):
     word = request.POST['word']

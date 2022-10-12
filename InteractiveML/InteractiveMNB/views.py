@@ -22,7 +22,10 @@ def predictor(request):
     return render(request, 'main.html', {'accuracy': k_fold_accuracy})
 
 def add_word(request):
-    word = request.POST['word']
+    print("here")
+    word = request.POST.get('word', False)
+    if word == False:
+        return predictor(request)
     model.add_word_vocabulary(word)
     model.getTrainTestData()
     model.train()
@@ -32,7 +35,9 @@ def add_word(request):
     return render(request, 'main.html', prediction)
 
 def rem_word(request):
-    word = request.POST['word']
+    word = request.POST.get('word', False)
+    if word == False:
+        return predictor(request)
     model.rem_word_vocabulary(word)
     model.getTrainTestData()
     model.train()
@@ -42,8 +47,12 @@ def rem_word(request):
     return render(request, 'main.html', prediction)
 
 def adj_weight(request):
-    word = request.POST['word']
-    weight = request.POST['weight']
+    word = request.POST.get('word', False)
+    weight = request.POST.get('weight', False)
+    if word == False:
+        return predictor(request)
+    if weight == False:
+        weight = 1
     model.adj_weight(word, weight)
     model.getTrainTestData()
     model.train()

@@ -130,7 +130,7 @@
             <form action="" method="POST">
                 {% csrf_token %}
                 <label for="txtdoc" class="topic"><b>Text Document</b></label>
-                <textarea name="txtdoc" rows="3" cols="50"></textarea>
+                <textarea name="txtdoc" rows="3" cols="50" required></textarea>
                 <input type="submit" value="Predict" class="button" id="predict">
             </form>
             <span class="topic"><b>Prediction result</b></span> <span class="value">{{Label}} ({{Probability}}%)</span>
